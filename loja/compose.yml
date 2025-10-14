@@ -1,0 +1,64 @@
+services:
+  backend-dev:
+    build:
+      context: ./backend
+      target: development
+    restart: always
+    ports:
+      - "${PORT_BACKEND}:6677"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules            # <-- mantém deps dentro do container
+    env_file: ./backend/.env
+    depends_on:
+      - db                           # <-- sobe depois do banco
+
+  frontend-dev:
+    container_name: frontend-dev
+    build:
+      context: ./frontend
+      target: development
+    restart: always
+    ports:
+      - "${PORT_FRONTEND}:3000"
+    volumes:
+      - ./frontend:/app
+    env_file: ./frontend/.env
+    depends_on:
+      - db                           # <-- sobe depois do banco
+      - backend-dev                  # <-- sobe depois do backend
+
+  db:
+    image: mysql:8.4.6-oraclelinux9
+    restart: always
+    ports:
+      - "${PORT_DB}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+    volumes:
+      - db-data:/var/lib/mysql
+      - db-conf:/etc/mysql/conf.d
+    # (opcional) healthcheck para aguardar o MySQL ficar pronto
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.2-apache
+    restart: always
+    ports:
+      - "${PORT_PHPMYADMIN}:80"
+    environment:
+      PMA_HOST: db
+    depends_on:
+      - db
+
+volumes:
+  db-data:
+  db-conf:
