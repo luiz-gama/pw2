@@ -51,6 +51,10 @@ const update = async (req: Request, res: Response) => {
 
   try {
     const updatedUser = await updateUser(id, payload);
+    if (!updatedUser) {
+      return res.status(404).json({ msg: 'Usuário não encontrado' });
+    }
+
     return res.json(toPublicUser(updatedUser));
   } catch (error) {
     return res.status(404).json({ msg: 'Usuário não encontrado' });
