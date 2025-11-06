@@ -1,9 +1,8 @@
+// Arquivo src/resources/product/product.router.ts
 import { Router } from 'express';
-
 import isAdmin from '../../middlewares/isAdmin';
 import productController from './product.controller';
 import checkAutorization from '../../middlewares/checkAutorization';
-
 const router = Router();
 
 router.get('/', productController.index);

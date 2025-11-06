@@ -1,4 +1,4 @@
-
+"use client";
 import { Navbar, NavbarBrand, NavbarCollapse, NavbarLink, NavbarToggle } from "flowbite-react";
 import Image from "next/image";
 import Link from "next/link";

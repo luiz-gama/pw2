@@ -1,4 +1,4 @@
-export enum UserTypes {
-  ADMIN = 'ADMIN',
-  CLIENT = 'CLIENT'
-}
+export const UserTypes = {
+  ADMIN: 'admin',
+  CLIENT: 'client'
+} as const;

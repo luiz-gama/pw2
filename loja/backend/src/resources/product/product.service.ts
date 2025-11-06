@@ -1,26 +1,20 @@
-import prisma from '../../utils/prismaClient';
-import { CreateProductInput, UpdateProductInput } from './product.types';
+// Arquivo src/resources/product/product.service.ts
+import { PrismaClient, Product } from '@prisma/client';
+import { ProdCreateDto } from './product.types';
 
-export const listProducts = () => {
-  return prisma.product.findMany();
-};
+const prisma = new PrismaClient();
 
-export const productExistsByName = (name: string) => {
-  return prisma.product.findUnique({ where: { name } });
-};
+export async function createProduct(
+  product: ProdCreateDto
+): Promise<Product> {
+  return await prisma.product.create({ data: product });
+}
 
-export const createProduct = (product: CreateProductInput) => {
-  return prisma.product.create({ data: product });
-};
-
-export const getProductById = (id: string) => {
-  return prisma.product.findUnique({ where: { id } });
-};
-
-export const updateProductById = (id: string, data: UpdateProductInput) => {
-  return prisma.product.update({ where: { id }, data });
-};
-
-export const deleteProductById = (id: string) => {
-  return prisma.product.delete({ where: { id } });
-};
+export async function alreadyExists(
+  name: string
+): Promise<boolean> {
+  const existingProduct = await prisma.product.findUnique({
+    where: { name },
+  });
+  return existingProduct !== null;
+}

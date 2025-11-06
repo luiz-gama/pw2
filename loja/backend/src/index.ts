@@ -15,9 +15,6 @@ declare module "express-session" {
   }
 }
 
-// The express-mysql-session factory typing can be picky depending on how TS resolves
-// the express-session module. Cast the factory to accept a looser type to avoid the
-// mismatch while keeping runtime behavior intact.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MySQLStore = (MySQLStoreFactory as unknown as (s: any) => any)(session);
 
@@ -28,6 +25,19 @@ const sessionStore = new MySQLStore({
   user: env.DB_USER,
   password: env.DB_PASS,
   database: env.DB_NAME,
+
+  // 👉 manda criar a tabela se não existir
+  createDatabaseTable: true,
+
+  // (opcional, mas bom pra ficar explícito)
+  schema: {
+    tableName: 'sessions',
+    columnNames: {
+      session_id: 'session_id',
+      expires: 'expires',
+      data: 'data',
+    },
+  },
 });
 
 const app = express();
@@ -35,15 +45,16 @@ const PORT = env.PORT;
 
 // registra o middleware de sessão
 app.use(session({
+  name: env.SESSION_NAME,            // usa o nome definido no .env (sid, etc.)
   genid: () => uuidv4(),
   secret: env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store: sessionStore,
   cookie: {
-    // duração do cookie de sessão no cliente (2h aqui)
-    maxAge: 1000 * 60 * 60 * 2,
-    // você pode ajustar depois: secure, sameSite, etc.
+    maxAge: env.SESSION_MAX_AGE_MS,  // 2h, vindo do .env já como número
+    // secure: true, // depois você ajusta pra produção
+    // sameSite: 'lax',
   }
 }));
 
@@ -52,12 +63,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(createLangCookie);
 
-// rota pública simples
 app.get('/', (_req, res) => {
   res.send('Olá, bem-vindo(a) ao curso de PW2!');
 });
 
-// rotas da API (login, register, etc)
 app.use('/api', router);
 
 app.listen(PORT, () => {

@@ -1,6 +1,7 @@
+import "./globals.css";
 import type { Metadata } from "next";
 
-import "./globals.css";
+
 //import { Navbar } from "flowbite-react";
 import { NavBar } from "@/components/NavBar/NavBar";
 

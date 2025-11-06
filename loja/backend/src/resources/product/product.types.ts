@@ -1,12 +1,6 @@
-export interface CreateProductInput {
-  name: string;
-  description?: string;
-  price: number;
-  stock: number;
-  status: number;
-  createdAt: Date;
-  updatedAt: Date;
+// Arquivo src/resources/product/product.types.ts
 
-}
-
-export type UpdateProductInput = Partial<CreateProductInput>;
+import { Product } from '@prisma/client';
+type ProdCreateDto= Pick<Product,'name'|'price'|'stock'>;
+type ProdUpdateDto= Pick<Product,'name'|'price'|'stock'>;
+export type { ProdCreateDto, ProdUpdateDto };

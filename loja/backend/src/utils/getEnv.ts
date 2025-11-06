@@ -20,12 +20,15 @@ const env = cleanEnv(process.env, {
   SESSION_SECRET: str(),
   BCCRYPTO_ROUNDS: num({ default: 10 }),
 
-  // >>> Estes campos abaixo são novos <<<
-  // Eles são usados para configurar o express-mysql-session
+  // 👇 NOVOS CAMPOS PARA A SESSÃO HTTP
+  SESSION_NAME: str({ default: "sid" }),
+  SESSION_MAX_AGE_MS: num({ default: 1000 * 60 * 60 * 2 }), // 2h em ms
+
+  // Config do MySQL usado pelo express-mysql-session
   DB_HOST: str({ default: "db" }),      // nome do serviço no docker compose
   DB_PORT: num({ default: 3306 }),      // porta interna do MySQL
-  DB_USER: str({ default: "root" }),    // root do MySQL ou outro usuário
-  DB_PASS: str(),                       // senha
+  DB_USER: str({ default: "root" }),    // ou o usuário que você definiu
+  DB_PASS: str(),                       // obrigatório -> precisa estar no .env
   DB_NAME: str({ default: "loja" }),    // nome do banco
 });
 

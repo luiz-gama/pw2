@@ -2,7 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 
 import { UserTypes } from '../resources/userType/userType.constants';
 
-type AllowedTypes = UserTypes | UserTypes[];
+type UserType = (typeof UserTypes)[keyof typeof UserTypes];
+type AllowedTypes = UserType | UserType[];
+
 
 const checkAuthorization =
   (allowed: AllowedTypes = UserTypes.ADMIN) =>
